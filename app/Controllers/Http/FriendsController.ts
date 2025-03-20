@@ -1,28 +1,27 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from "@ioc:Adonis/Lucid/Database";
+import User from 'App/Models/User';
 
 export default class FriendsController {
-  async myFriends({auth, request, response}: HttpContextContract){
+  async myFriends({auth, response}: HttpContextContract){
+
     const  user = auth.user;
 
-    const id = request.param('id');
-
-    if(!user || id != user.id){
-      return response.status(501).json({message: 'Authentication required'});
-    }
-
     try {
-      const friend1 = await Database
-        .from('friends')
-        .select('*')
-        .where('firstUser', id)
+      if(user){
+        const friends = await Database
+          .from('friends')
+          .select('*')
+          .where('first_user', user.id)
+          .orWhere('second_user', user.id)
 
-      const friend2 = await Database
-        .from('friends')
-        .select('*')
-        .where('secondUser', id)
 
-      return response.status(200).json([...friend1, ...friend2]);
+          const friendList = await User
+            .query()
+            .whereIn('id', friends.map(friend => friend.first_user == user.id ? friend.second_user : friend.first_user))
+
+        return response.status(200).json(friendList);
+      }
     } catch (error) {
       console.log(error)
     }

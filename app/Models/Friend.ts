@@ -6,10 +6,10 @@ export default class Friend extends BaseModel {
   public id: number
 
   @column()
-  public firstUser: Number
+  public first_user: number
 
   @column()
-  public secondUser: Number
+  public second_user: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

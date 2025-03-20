@@ -8,21 +8,23 @@ export default class CommentairesController {
     const { commentaire } = request.only(['commentaire'])
     const user = auth.user;
     const postId = request.param('post')
-
    try {
      if(user){
+      
        if(commentaire !== ""){
+        
          await Commentaire.create({
            postId: postId,
            user: user.id,
            content: commentaire
          })
+
+         return response.status(200).json({
+          message: "Successfully"
+        })
        }
      }
 
-     return response.status(200).json({
-       message: "Successfully"
-     })
    }catch (e){
       console.log(e);
       return response.status(500).json({
@@ -39,12 +41,11 @@ export default class CommentairesController {
       const commentaires = await Commentaire
         .query()
         .where('postId', post)
+        .orderBy('id', 'desc');
 
       for (const commentaire of commentaires){
-        const user = User
-          .query()
-          .select(['id', 'name', 'username', 'picture'])
-          .where('id', commentaire.user)
+        const user = await User
+          .find(commentaire.user)
 
         tab.push({
           user,

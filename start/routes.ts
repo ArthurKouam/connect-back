@@ -20,10 +20,17 @@
 
 import Route from '@ioc:Adonis/Core/Route'
 
+Route.get('/', ( {response} )=> response.send("<h1>Hello world</h1>") )
+
 Route.group(()=>{
   Route.post('/login', 'UsersController.login');
   Route.post('/register', 'UsersController.register');
 }).prefix('auth')
+
+Route.put('/user/:id', 'UsersController.modifyProfile').middleware('auth')
+Route.get('/user/username/check', 'UsersController.checkUsername')
+Route.get('/user/:id', 'UsersController.getUser')
+
 
 Route.group(()=>{
   Route.post('/', 'PostsController.newPost').middleware('auth');
@@ -33,15 +40,21 @@ Route.group(()=>{
 }).prefix('posts')
 
 Route.group(()=>{
+  Route.get('/', 'FriendsController.myFriends')
+  
+}).prefix('friend').middleware('auth')
+
+Route.group(()=>{
   Route.post('/', 'FriendAsksController.newAsk')
   Route.delete('/', 'FriendAsksController.rejectAsk')
   Route.put('/', 'FriendAsksController.acceptAsk')
+  Route.get('/recommend/:id', 'FriendAsksController.recommendFriends')
   Route.get('/for_user', 'FriendAsksController.getAskForUser');
   Route.get('/from_user', 'FriendAsksController.getMyAsk');
-}).prefix('friend_ask').middleware('auth')
+}).prefix('friend-requests').middleware('auth')
 
 Route.group(()=>{
-  Route.post('/:post', 'CommentairesController.addCommentaire');
+  Route.post('/:post', 'CommentairesController.addCommentaire').middleware('auth');
   Route.get('/:post', 'CommentairesController.getAllCommentaire')
 
 }).prefix('commentaire')

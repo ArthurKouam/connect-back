@@ -12,9 +12,12 @@ export default class PostsController {
 
     if(user){
       const {description} = request.only(['description']);
+
       const files = request.files('picture', {
         extnames: ['png', 'jpeg', 'jpg', 'webp'],
+        size: '2mb'
       });
+
       const post = await Post.create({
         description,
         user: user.id,
@@ -67,7 +70,7 @@ export default class PostsController {
         return response.json({
           status: 200,
           post,
-          images,
+          image: images,
           user
         })
       }else{
@@ -84,10 +87,12 @@ export default class PostsController {
 
     try {
       if(idUser){
-        const posts = await Database
-          .from('posts')
-          .select('*')
-          .where('user', idUser);
+        const posts = await Post
+          .query()
+          .where('user', idUser)
+          .preload('commentaires')
+          .withCount('commentaires')
+          .orderBy('id', 'desc');
 
         let tabPost: object[] = [];
 
@@ -132,6 +137,7 @@ export default class PostsController {
         const user = await Database
           .from('users')
           .select('id', 'name', 'username', 'picture')
+          .where('id', post.user);
 
         const  image = await Image
           .query()
@@ -139,7 +145,7 @@ export default class PostsController {
 
         tabPosts.push({
           post,
-          user,
+          user: user[0],
           image,
         });
       }
