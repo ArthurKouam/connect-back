@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.string('username').notNullable().unique()
       table.string('password', 180).notNullable()
       table.string('picture').nullable();
+      table.string('actus').nullable().defaultTo('Salut, j\'utilise CONNECT');
       table.string('remember_me_token').nullable()
 
       /**

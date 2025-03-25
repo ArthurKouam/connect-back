@@ -20,7 +20,7 @@ export default class UsersController {
         })
       }
 
-      const tryEmail = await User.findBy('username', email);
+      const tryEmail = await User.findBy('email', email);
 
       if(tryEmail){
         return response.status(500).json({
@@ -47,6 +47,7 @@ export default class UsersController {
           email,
           username,
           name,
+          actus: user.actus,
         },
         token,
       })
@@ -76,6 +77,7 @@ export default class UsersController {
           username: user?.username,
           picture: user?.picture,
           name: user?.name,
+          actus: user?.actus,
         },
         token,
       })
@@ -129,7 +131,7 @@ export default class UsersController {
     if (user) {
       const file = request.file('picture', {
         extnames: ['png', 'jpg', 'jpeg', 'webp'],
-        size: '1 mb'
+        size: '6 mb'
       });
 
       if(file){
@@ -183,7 +185,7 @@ export default class UsersController {
 
     const id = request.param('id');
 
-    const { name, username } = request.only(['name', 'username']);
+    const { name, username, actus } = request.only(['name', 'username', 'actus']);
 
     const user = await User.find(id);
     const file = request.file('picture', {
@@ -213,6 +215,7 @@ export default class UsersController {
           name,
           username,
           picture: file ? user.id.toString() + '.' + file.extname : null,
+          actus,
         })
 
       return response.status(200).json({
@@ -222,6 +225,7 @@ export default class UsersController {
           username: username,
           id,
           picture: file ? user.id.toString() + '.' + file.extname : null,
+          actus
         }
       })
     } catch (error) {

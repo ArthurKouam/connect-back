@@ -15,7 +15,7 @@ export default class PostsController {
 
       const files = request.files('picture', {
         extnames: ['png', 'jpeg', 'jpg', 'webp'],
-        size: '2mb'
+        size: '9mb'
       });
 
       const post = await Post.create({

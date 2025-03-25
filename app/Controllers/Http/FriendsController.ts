@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from "@ioc:Adonis/Lucid/Database";
+import Friend from 'App/Models/Friend';
 import User from 'App/Models/User';
 
 export default class FriendsController {
@@ -9,12 +10,10 @@ export default class FriendsController {
 
     try {
       if(user){
-        const friends = await Database
-          .from('friends')
-          .select('*')
+        const friends = await Friend
+          .query()
           .where('first_user', user.id)
-          .orWhere('second_user', user.id)
-
+          .orWhere('second_user', user.id);
 
           const friendList = await User
             .query()
